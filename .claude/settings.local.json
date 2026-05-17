@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(mkdir -p /Users/hyunhonoh/dev/logtoon/src/components /Users/hyunhonoh/dev/logtoon/src/hooks)",
+      "Bash(rm /Users/hyunhonoh/dev/logtoon/src/App.css)",
+      "Bash(npm run *)",
+      "Bash(curl -s http://localhost:5173)",
+      "Skill(browse)"
+    ]
+  }
+}
