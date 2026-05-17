@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import webtoonDB from '../data/webtoons.json'
 
 const STATUS_OPTIONS = ['읽는중', '완결', '보류', '관심']
 
@@ -22,6 +23,9 @@ const empty = {
 
 export default function WebtoonModal({ webtoon, onSave, onClose }) {
   const [form, setForm] = useState(empty)
+  const [suggestions, setSuggestions] = useState([])
+  const [showSuggest, setShowSuggest] = useState(false)
+  const suggestRef = useRef(null)
 
   useEffect(() => {
     if (webtoon) {
@@ -31,9 +35,42 @@ export default function WebtoonModal({ webtoon, onSave, onClose }) {
     }
   }, [webtoon])
 
+  useEffect(() => {
+    function handleClick(e) {
+      if (suggestRef.current && !suggestRef.current.contains(e.target)) {
+        setShowSuggest(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
   function handleChange(e) {
     const { name, value } = e.target
     setForm(prev => ({ ...prev, [name]: value }))
+
+    if (name === 'title') {
+      const q = value.trim()
+      if (q.length >= 1) {
+        const matched = webtoonDB
+          .filter(w => w.title.toLowerCase().includes(q.toLowerCase()))
+          .slice(0, 6)
+        setSuggestions(matched)
+        setShowSuggest(matched.length > 0)
+      } else {
+        setShowSuggest(false)
+      }
+    }
+  }
+
+  function selectSuggestion(item) {
+    setForm(prev => ({
+      ...prev,
+      title: item.title,
+      author: item.author || prev.author,
+      genre: item.genre || prev.genre,
+    }))
+    setShowSuggest(false)
   }
 
   function handleSubmit(e) {
@@ -66,7 +103,38 @@ export default function WebtoonModal({ webtoon, onSave, onClose }) {
 
         <form onSubmit={handleSubmit} className="px-6 py-4 space-y-3">
           <Field label="제목 *">
-            <input name="title" value={form.title} onChange={handleChange} required placeholder="작품 제목" className="input" />
+            <div className="relative" ref={suggestRef}>
+              <input
+                name="title"
+                value={form.title}
+                onChange={handleChange}
+                onFocus={() => form.title && suggestions.length > 0 && setShowSuggest(true)}
+                required
+                placeholder="작품 제목"
+                className="input"
+                autoComplete="off"
+              />
+              {showSuggest && (
+                <ul
+                  className="absolute z-10 w-full mt-1 rounded-xl overflow-hidden"
+                  style={{ background: '#fff', border: '1px solid #e8e0d8', boxShadow: '0 4px 16px rgba(0,0,0,0.1)' }}
+                >
+                  {suggestions.map((item, i) => (
+                    <li
+                      key={i}
+                      onMouseDown={() => selectSuggestion(item)}
+                      className="flex items-center justify-between px-3 py-2 cursor-pointer text-sm"
+                      style={{ borderBottom: i < suggestions.length - 1 ? '1px solid #f5ede8' : 'none' }}
+                      onMouseOver={e => e.currentTarget.style.background = '#faf8f5'}
+                      onMouseOut={e => e.currentTarget.style.background = '#fff'}
+                    >
+                      <span style={{ color: '#2d2420', fontWeight: 500 }}>{item.title}</span>
+                      <span style={{ color: '#a8a29e', fontSize: 11 }}>{item.author} · {item.genre}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </Field>
 
           <div className="grid grid-cols-2 gap-3">
