@@ -58,7 +58,7 @@ function WebtoonCard({ webtoon, onEdit, onDelete, onIncrementEp }) {
         {initial}
       </div>
 
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0 overflow-hidden">
         <div className="flex items-center gap-2 flex-wrap mb-1">
           <span className="font-bold text-sm" style={{ color: '#2d2420' }}>{title}</span>
           <span
@@ -107,16 +107,6 @@ function WebtoonCard({ webtoon, onEdit, onDelete, onIncrementEp }) {
           {progress !== null && (
             <span className="text-xs shrink-0" style={{ color: '#a8a29e' }}>{progress}%</span>
           )}
-          {status === '읽는중' && (
-            <button
-              onClick={() => onIncrementEp(webtoon.id)}
-              className="shrink-0 text-xs px-2 py-0.5 rounded-full font-bold transition-colors"
-              style={{ background: '#fef3c7', color: '#d97706', border: '1px solid #fcd34d' }}
-              title="1화 읽음"
-            >
-              +1
-            </button>
-          )}
         </div>
 
         {memo && (
@@ -124,11 +114,23 @@ function WebtoonCard({ webtoon, onEdit, onDelete, onIncrementEp }) {
         )}
       </div>
 
-      {/* ... 메뉴 */}
-      <div className="relative shrink-0" ref={menuRef}>
+      {/* 오른쪽 액션 */}
+      <div className="flex items-center gap-1 shrink-0">
+        {status === '읽는중' && (
+          <button
+            onClick={() => onIncrementEp(webtoon.id)}
+            className="text-xs px-3 py-1.5 rounded-xl font-bold transition-colors"
+            style={{ background: '#fef3c7', color: '#d97706', border: '1px solid #fcd34d' }}
+          >
+            +1 읽음
+          </button>
+        )}
+
+        {/* ... 메뉴 */}
+        <div className="relative" ref={menuRef}>
         <button
           onClick={() => setMenuOpen(v => !v)}
-          className="text-sm w-7 h-7 flex items-center justify-center rounded-lg transition-colors"
+          className="text-sm w-8 h-8 flex items-center justify-center rounded-lg transition-colors"
           style={{ color: '#a8a29e' }}
           onMouseOver={e => e.currentTarget.style.background = '#f5ede8'}
           onMouseOut={e => e.currentTarget.style.background = 'transparent'}
@@ -162,6 +164,7 @@ function WebtoonCard({ webtoon, onEdit, onDelete, onIncrementEp }) {
             </button>
           </div>
         )}
+        </div>
       </div>
     </div>
   )
