@@ -26,7 +26,7 @@ export default function WebtoonList({ webtoons, onEdit, onDelete }) {
 }
 
 function WebtoonCard({ webtoon, onEdit, onDelete }) {
-  const { title, author, genre, status, currentEp, totalEp, rating, memo } = webtoon
+  const { title, author, genre, status, serialDays, currentEp, totalEp, rating, memo } = webtoon
   const progress = totalEp ? Math.min(100, Math.round((currentEp / totalEp) * 100)) : null
   const cover = getCoverColor(title)
   const initial = title.charAt(0)
@@ -59,9 +59,24 @@ function WebtoonCard({ webtoon, onEdit, onDelete }) {
           )}
         </div>
 
-        <div className="text-xs mb-2" style={{ color: '#a8a29e' }}>
-          {author && <span>{author}</span>}
-          {genre && <span> · {genre}</span>}
+        <div className="flex items-center gap-2 flex-wrap mb-2">
+          <span className="text-xs" style={{ color: '#a8a29e' }}>
+            {author && <span>{author}</span>}
+            {genre && <span> · {genre}</span>}
+          </span>
+          {serialDays && serialDays.length > 0 && (
+            <div className="flex gap-0.5">
+              {serialDays.map(day => (
+                <span
+                  key={day}
+                  className="text-xs px-1.5 py-0.5 rounded-full font-bold"
+                  style={{ background: '#fef3c7', color: '#d97706', fontSize: 10 }}
+                >
+                  {day}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="flex items-center gap-3">

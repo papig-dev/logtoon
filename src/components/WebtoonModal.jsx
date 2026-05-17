@@ -10,11 +10,14 @@ const STATUS_ACTIVE = {
   '관심':   { background: '#ede9fe', color: '#7c3aed', border: '1px solid #c4b5fd' },
 }
 
+const DAYS = ['월', '화', '수', '목', '금', '토', '일']
+
 const empty = {
   title: '',
   author: '',
   genre: '',
   status: '읽는중',
+  serialDays: [],
   currentEp: 0,
   totalEp: '',
   rating: null,
@@ -71,6 +74,16 @@ export default function WebtoonModal({ webtoon, onSave, onClose }) {
       genre: item.genre || prev.genre,
     }))
     setShowSuggest(false)
+  }
+
+  function toggleDay(day) {
+    setForm(prev => {
+      const days = prev.serialDays || []
+      return {
+        ...prev,
+        serialDays: days.includes(day) ? days.filter(d => d !== day) : [...days, day],
+      }
+    })
   }
 
   function handleSubmit(e) {
@@ -163,6 +176,29 @@ export default function WebtoonModal({ webtoon, onSave, onClose }) {
                   {s}
                 </button>
               ))}
+            </div>
+          </Field>
+
+          <Field label="연재 요일">
+            <div className="flex gap-1.5">
+              {DAYS.map(day => {
+                const active = (form.serialDays || []).includes(day)
+                return (
+                  <button
+                    key={day}
+                    type="button"
+                    onClick={() => toggleDay(day)}
+                    className="w-8 h-8 rounded-full text-xs font-bold transition-colors"
+                    style={
+                      active
+                        ? { background: '#d97706', color: '#fff', border: '1px solid #d97706' }
+                        : { background: '#fff', color: '#a8a29e', border: '1px solid #e8e0d8' }
+                    }
+                  >
+                    {day}
+                  </button>
+                )
+              })}
             </div>
           </Field>
 
