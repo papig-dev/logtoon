@@ -9,7 +9,10 @@
       "Skill(browse)",
       "Bash(git add *)",
       "Bash(git commit *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(/Users/hyunhonoh/.claude/skills/gstack/browse/dist/browse goto *)",
+      "Bash(/Users/hyunhonoh/.claude/skills/gstack/browse/dist/browse click *)",
+      "Bash(/Users/hyunhonoh/.claude/skills/gstack/browse/dist/browse snapshot *)"
     ]
   }
 }

@@ -1,3 +1,5 @@
+import { getCoverColor } from '../utils/coverColor'
+
 const STATUS_COLOR = {
   '읽는중': 'bg-blue-100 text-blue-700',
   '완결':   'bg-green-100 text-green-700',
@@ -26,9 +28,19 @@ export default function WebtoonList({ webtoons, onEdit, onDelete }) {
 function WebtoonCard({ webtoon, onEdit, onDelete }) {
   const { title, author, genre, status, currentEp, totalEp, rating, memo } = webtoon
   const progress = totalEp ? Math.min(100, Math.round((currentEp / totalEp) * 100)) : null
+  const cover = getCoverColor(title)
+  const initial = title.charAt(0)
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4 hover:border-gray-300 transition-colors">
+      {/* 커버 */}
+      <div
+        className="shrink-0 w-10 h-14 rounded-lg flex items-center justify-center text-lg font-bold select-none"
+        style={{ backgroundColor: cover.bg, color: cover.text }}
+      >
+        {initial}
+      </div>
+
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="font-semibold text-gray-900 text-sm">{title}</span>
