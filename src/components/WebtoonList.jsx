@@ -1,23 +1,23 @@
 import { getCoverColor } from '../utils/coverColor'
 
-const STATUS_COLOR = {
-  '읽는중': 'bg-blue-100 text-blue-700',
-  '완결':   'bg-green-100 text-green-700',
-  '보류':   'bg-yellow-100 text-yellow-700',
-  '관심':   'bg-purple-100 text-purple-700',
+const STATUS_STYLE = {
+  '읽는중': { background: '#fef3c7', color: '#d97706' },
+  '완결':   { background: '#dcfce7', color: '#16a34a' },
+  '보류':   { background: '#f3f4f6', color: '#6b7280' },
+  '관심':   { background: '#ede9fe', color: '#7c3aed' },
 }
 
 export default function WebtoonList({ webtoons, onEdit, onDelete }) {
   if (webtoons.length === 0) {
     return (
-      <div className="text-center py-20 text-gray-400 text-sm">
+      <div className="text-center py-20 text-sm" style={{ color: '#a8a29e' }}>
         작품을 추가해보세요 ✦
       </div>
     )
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2.5">
       {webtoons.map(w => (
         <WebtoonCard key={w.id} webtoon={w} onEdit={onEdit} onDelete={onDelete} />
       ))}
@@ -30,59 +30,69 @@ function WebtoonCard({ webtoon, onEdit, onDelete }) {
   const progress = totalEp ? Math.min(100, Math.round((currentEp / totalEp) * 100)) : null
   const cover = getCoverColor(title)
   const initial = title.charAt(0)
+  const statusStyle = STATUS_STYLE[status] || STATUS_STYLE['보류']
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4 hover:border-gray-300 transition-colors">
+    <div
+      className="rounded-2xl px-5 py-4 flex items-start gap-4 transition-shadow hover:shadow-md"
+      style={{ background: '#fff', border: '1px solid #e8e0d8', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}
+    >
       {/* 커버 */}
       <div
-        className="shrink-0 w-10 h-14 rounded-lg flex items-center justify-center text-lg font-bold select-none"
-        style={{ backgroundColor: cover.bg, color: cover.text }}
+        className="shrink-0 w-11 h-15 rounded-xl flex items-center justify-center text-xl font-extrabold select-none"
+        style={{ backgroundColor: cover.bg, color: cover.text, width: 44, height: 60, borderRadius: 12 }}
       >
         {initial}
       </div>
 
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="font-semibold text-gray-900 text-sm">{title}</span>
-          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_COLOR[status]}`}>
+        <div className="flex items-center gap-2 flex-wrap mb-1">
+          <span className="font-bold text-sm" style={{ color: '#2d2420' }}>{title}</span>
+          <span
+            className="text-xs px-2 py-0.5 rounded-full font-semibold"
+            style={statusStyle}
+          >
             {status}
           </span>
           {rating && (
-            <span className="text-xs text-yellow-500">{'★'.repeat(rating)}</span>
+            <span className="text-sm" style={{ color: '#f59e0b' }}>{'★'.repeat(rating)}</span>
           )}
         </div>
 
-        <div className="text-xs text-gray-400 mt-0.5 space-x-2">
+        <div className="text-xs mb-2" style={{ color: '#a8a29e' }}>
           {author && <span>{author}</span>}
-          {genre && <span>· {genre}</span>}
+          {genre && <span> · {genre}</span>}
         </div>
 
-        <div className="mt-2 flex items-center gap-3">
-          <span className="text-xs text-gray-500">
+        <div className="flex items-center gap-3">
+          <span className="text-xs" style={{ color: '#78716c' }}>
             {currentEp}화{totalEp ? ` / ${totalEp}화` : ''}
           </span>
           {progress !== null && (
-            <div className="flex-1 max-w-32 bg-gray-100 rounded-full h-1.5">
+            <div className="flex-1 max-w-32 rounded-full h-1.5" style={{ background: '#f5ede8' }}>
               <div
-                className="bg-gray-800 h-1.5 rounded-full transition-all"
-                style={{ width: `${progress}%` }}
+                className="h-1.5 rounded-full transition-all"
+                style={{ width: `${progress}%`, background: '#d97706' }}
               />
             </div>
           )}
           {progress !== null && (
-            <span className="text-xs text-gray-400">{progress}%</span>
+            <span className="text-xs" style={{ color: '#a8a29e' }}>{progress}%</span>
           )}
         </div>
 
         {memo && (
-          <p className="text-xs text-gray-400 mt-1.5 truncate">{memo}</p>
+          <p className="text-xs mt-1.5 truncate" style={{ color: '#a8a29e' }}>{memo}</p>
         )}
       </div>
 
       <div className="flex gap-1 shrink-0">
         <button
           onClick={() => onEdit(webtoon)}
-          className="text-xs px-2.5 py-1 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors"
+          className="text-xs px-2.5 py-1 rounded-lg transition-colors"
+          style={{ color: '#a8a29e' }}
+          onMouseOver={e => e.currentTarget.style.background = '#f5ede8'}
+          onMouseOut={e => e.currentTarget.style.background = 'transparent'}
         >
           편집
         </button>
@@ -90,7 +100,10 @@ function WebtoonCard({ webtoon, onEdit, onDelete }) {
           onClick={() => {
             if (confirm(`"${title}" 을(를) 삭제할까요?`)) onDelete(webtoon.id)
           }}
-          className="text-xs px-2.5 py-1 rounded-lg text-red-400 hover:bg-red-50 transition-colors"
+          className="text-xs px-2.5 py-1 rounded-lg transition-colors"
+          style={{ color: '#fca5a5' }}
+          onMouseOver={e => e.currentTarget.style.background = '#fef2f2'}
+          onMouseOut={e => e.currentTarget.style.background = 'transparent'}
         >
           삭제
         </button>

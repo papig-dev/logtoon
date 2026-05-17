@@ -54,27 +54,32 @@ export default function App() {
     })
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ background: '#faf8f5' }}>
       <div className="max-w-2xl mx-auto px-4 py-8">
         {/* 헤더 */}
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-xl font-bold text-gray-900 tracking-tight">로그툰</h1>
+          <h1 className="text-xl font-extrabold tracking-tight" style={{ color: '#2d2420' }}>
+            로그<span style={{ color: '#d97706' }}>툰</span>
+          </h1>
           <div className="flex gap-2">
             <button
               onClick={() => importRef.current.click()}
-              className="text-xs px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-100"
+              className="text-xs px-3 py-1.5 rounded-xl font-medium transition-colors"
+              style={{ background: '#fff', border: '1px solid #e8e0d8', color: '#78716c', boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}
             >
               가져오기
             </button>
             <button
               onClick={exportJSON}
-              className="text-xs px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-100"
+              className="text-xs px-3 py-1.5 rounded-xl font-medium transition-colors"
+              style={{ background: '#fff', border: '1px solid #e8e0d8', color: '#78716c', boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}
             >
               내보내기
             </button>
             <button
               onClick={openAdd}
-              className="text-xs px-3 py-1.5 rounded-lg bg-gray-900 text-white hover:bg-gray-700"
+              className="text-xs px-3 py-1.5 rounded-xl font-semibold"
+              style={{ background: '#d97706', color: '#fff', boxShadow: '0 2px 4px rgba(217,119,6,0.3)', border: 'none' }}
             >
               + 추가
             </button>
@@ -93,15 +98,17 @@ export default function App() {
 
         {/* 필터 & 검색 */}
         <div className="flex flex-col sm:flex-row gap-2 mb-4">
-          <div className="flex gap-1 flex-wrap">
+          <div className="flex gap-1.5 flex-wrap">
             {STATUS_FILTERS.map(s => (
               <button
                 key={s}
                 onClick={() => setFilterStatus(s)}
-                className={`text-xs px-3 py-1.5 rounded-lg font-medium transition-colors
-                  ${filterStatus === s
-                    ? 'bg-gray-900 text-white'
-                    : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+                className="text-xs px-3 py-1.5 rounded-full font-medium transition-colors"
+                style={
+                  filterStatus === s
+                    ? { background: '#2d2420', color: '#faf8f5', border: '1px solid #2d2420' }
+                    : { background: '#fff', color: '#78716c', border: '1px solid #e8e0d8', boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }
+                }
               >
                 {s}
               </button>
@@ -112,12 +119,14 @@ export default function App() {
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="제목 / 작가 검색"
-              className="text-xs px-3 py-1.5 rounded-lg border border-gray-200 bg-white w-40 outline-none focus:border-gray-400"
+              className="text-xs px-3 py-1.5 rounded-full w-40 outline-none"
+              style={{ background: '#fff', border: '1px solid #e8e0d8', color: '#3d3530', boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}
             />
             <select
               value={sortBy}
               onChange={e => setSortBy(e.target.value)}
-              className="text-xs px-2 py-1.5 rounded-lg border border-gray-200 bg-white text-gray-600 outline-none"
+              className="text-xs px-2 py-1.5 rounded-full outline-none"
+              style={{ background: '#fff', border: '1px solid #e8e0d8', color: '#78716c' }}
             >
               {SORT_OPTIONS.map(o => (
                 <option key={o.value} value={o.value}>{o.label}</option>

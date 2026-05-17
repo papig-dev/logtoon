@@ -2,6 +2,13 @@ import { useState, useEffect } from 'react'
 
 const STATUS_OPTIONS = ['읽는중', '완결', '보류', '관심']
 
+const STATUS_ACTIVE = {
+  '읽는중': { background: '#fef3c7', color: '#d97706', border: '1px solid #fcd34d' },
+  '완결':   { background: '#dcfce7', color: '#16a34a', border: '1px solid #86efac' },
+  '보류':   { background: '#f3f4f6', color: '#6b7280', border: '1px solid #d1d5db' },
+  '관심':   { background: '#ede9fe', color: '#7c3aed', border: '1px solid #c4b5fd' },
+}
+
 const empty = {
   title: '',
   author: '',
@@ -42,25 +49,24 @@ export default function WebtoonModal({ webtoon, onSave, onClose }) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl w-full max-w-md shadow-xl">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <h2 className="text-base font-semibold text-gray-900">
+    <div className="fixed inset-0 flex items-center justify-center z-50 p-4" style={{ background: 'rgba(0,0,0,0.35)' }}>
+      <div className="w-full max-w-md rounded-3xl shadow-2xl" style={{ background: '#faf8f5' }}>
+        <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid #e8e0d8' }}>
+          <h2 className="text-sm font-bold" style={{ color: '#2d2420' }}>
             {webtoon ? '작품 편집' : '작품 추가'}
           </h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl leading-none">×</button>
+          <button
+            onClick={onClose}
+            className="text-xl leading-none"
+            style={{ color: '#a8a29e' }}
+          >
+            ×
+          </button>
         </div>
 
         <form onSubmit={handleSubmit} className="px-6 py-4 space-y-3">
           <Field label="제목 *">
-            <input
-              name="title"
-              value={form.title}
-              onChange={handleChange}
-              required
-              placeholder="작품 제목"
-              className="input"
-            />
+            <input name="title" value={form.title} onChange={handleChange} required placeholder="작품 제목" className="input" />
           </Field>
 
           <div className="grid grid-cols-2 gap-3">
@@ -79,10 +85,12 @@ export default function WebtoonModal({ webtoon, onSave, onClose }) {
                   key={s}
                   type="button"
                   onClick={() => setForm(prev => ({ ...prev, status: s }))}
-                  className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-colors
-                    ${form.status === s
-                      ? 'bg-gray-900 text-white'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                  className="flex-1 py-1.5 rounded-full text-xs font-semibold transition-colors"
+                  style={
+                    form.status === s
+                      ? STATUS_ACTIVE[s]
+                      : { background: '#fff', color: '#a8a29e', border: '1px solid #e8e0d8' }
+                  }
                 >
                   {s}
                 </button>
@@ -106,7 +114,8 @@ export default function WebtoonModal({ webtoon, onSave, onClose }) {
                   key={n}
                   type="button"
                   onClick={() => setForm(prev => ({ ...prev, rating: prev.rating === n ? null : n }))}
-                  className={`text-xl ${form.rating >= n ? 'text-yellow-400' : 'text-gray-200'}`}
+                  className="text-2xl transition-colors"
+                  style={{ color: form.rating >= n ? '#f59e0b' : '#e8e0d8' }}
                 >
                   ★
                 </button>
@@ -126,10 +135,19 @@ export default function WebtoonModal({ webtoon, onSave, onClose }) {
           </Field>
 
           <div className="flex gap-2 pt-2">
-            <button type="button" onClick={onClose} className="flex-1 py-2 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 py-2 rounded-xl text-sm font-medium"
+              style={{ background: '#fff', border: '1px solid #e8e0d8', color: '#78716c' }}
+            >
               취소
             </button>
-            <button type="submit" className="flex-1 py-2 rounded-lg bg-gray-900 text-sm text-white hover:bg-gray-700">
+            <button
+              type="submit"
+              className="flex-1 py-2 rounded-xl text-sm font-semibold"
+              style={{ background: '#d97706', color: '#fff', border: 'none', boxShadow: '0 2px 4px rgba(217,119,6,0.3)' }}
+            >
               저장
             </button>
           </div>
@@ -142,7 +160,7 @@ export default function WebtoonModal({ webtoon, onSave, onClose }) {
 function Field({ label, children }) {
   return (
     <div>
-      <label className="block text-xs font-medium text-gray-500 mb-1">{label}</label>
+      <label className="block text-xs font-medium mb-1" style={{ color: '#a8a29e' }}>{label}</label>
       {children}
     </div>
   )
