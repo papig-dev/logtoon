@@ -3,6 +3,7 @@ import { useWebtoons } from './hooks/useWebtoons'
 import Stats from './components/Stats'
 import WebtoonList from './components/WebtoonList'
 import WebtoonModal from './components/WebtoonModal'
+import StatsPage from './components/StatsPage'
 
 const STATUS_FILTERS = ['전체', '읽는중', '완결', '보류', '관심']
 const SORT_OPTIONS = [
@@ -15,6 +16,7 @@ const SORT_OPTIONS = [
 export default function App() {
   const { webtoons, addWebtoon, updateWebtoon, deleteWebtoon, exportJSON, importJSON } = useWebtoons()
 
+  const [tab, setTab] = useState('목록')
   const [modalOpen, setModalOpen] = useState(false)
   const [editTarget, setEditTarget] = useState(null)
   const [filterStatus, setFilterStatus] = useState('전체')
@@ -93,50 +95,74 @@ export default function App() {
           />
         </div>
 
-        {/* 통계 */}
-        <Stats webtoons={webtoons} />
-
-        {/* 필터 & 검색 */}
-        <div className="flex flex-col sm:flex-row gap-2 mb-4">
-          <div className="flex gap-1.5 flex-wrap">
-            {STATUS_FILTERS.map(s => (
-              <button
-                key={s}
-                onClick={() => setFilterStatus(s)}
-                className="text-xs px-3 py-1.5 rounded-full font-medium transition-colors"
-                style={
-                  filterStatus === s
-                    ? { background: '#2d2420', color: '#faf8f5', border: '1px solid #2d2420' }
-                    : { background: '#fff', color: '#78716c', border: '1px solid #e8e0d8', boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }
-                }
-              >
-                {s}
-              </button>
-            ))}
-          </div>
-          <div className="flex gap-2 ml-auto">
-            <input
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder="제목 / 작가 검색"
-              className="text-xs px-3 py-1.5 rounded-full w-40 outline-none"
-              style={{ background: '#fff', border: '1px solid #e8e0d8', color: '#3d3530', boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}
-            />
-            <select
-              value={sortBy}
-              onChange={e => setSortBy(e.target.value)}
-              className="text-xs px-2 py-1.5 rounded-full outline-none"
-              style={{ background: '#fff', border: '1px solid #e8e0d8', color: '#78716c' }}
+        {/* 탭 */}
+        <div className="flex gap-1 mb-5" style={{ borderBottom: '1px solid #e8e0d8', paddingBottom: 0 }}>
+          {['목록', '통계'].map(t => (
+            <button
+              key={t}
+              onClick={() => setTab(t)}
+              className="text-sm font-semibold px-4 py-2 transition-colors"
+              style={
+                tab === t
+                  ? { color: '#d97706', borderBottom: '2px solid #d97706', marginBottom: -1 }
+                  : { color: '#a8a29e', borderBottom: '2px solid transparent', marginBottom: -1 }
+              }
             >
-              {SORT_OPTIONS.map(o => (
-                <option key={o.value} value={o.value}>{o.label}</option>
-              ))}
-            </select>
-          </div>
+              {t}
+            </button>
+          ))}
         </div>
 
-        {/* 목록 */}
-        <WebtoonList webtoons={filtered} onEdit={openEdit} onDelete={deleteWebtoon} />
+        {tab === '목록' && (
+          <>
+            {/* 통계 요약 */}
+            <Stats webtoons={webtoons} />
+
+            {/* 필터 & 검색 */}
+            <div className="flex flex-col sm:flex-row gap-2 mb-4">
+              <div className="flex gap-1.5 flex-wrap">
+                {STATUS_FILTERS.map(s => (
+                  <button
+                    key={s}
+                    onClick={() => setFilterStatus(s)}
+                    className="text-xs px-3 py-1.5 rounded-full font-medium transition-colors"
+                    style={
+                      filterStatus === s
+                        ? { background: '#2d2420', color: '#faf8f5', border: '1px solid #2d2420' }
+                        : { background: '#fff', color: '#78716c', border: '1px solid #e8e0d8', boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }
+                    }
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+              <div className="flex gap-2 ml-auto">
+                <input
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  placeholder="제목 / 작가 검색"
+                  className="text-xs px-3 py-1.5 rounded-full w-40 outline-none"
+                  style={{ background: '#fff', border: '1px solid #e8e0d8', color: '#3d3530', boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}
+                />
+                <select
+                  value={sortBy}
+                  onChange={e => setSortBy(e.target.value)}
+                  className="text-xs px-2 py-1.5 rounded-full outline-none"
+                  style={{ background: '#fff', border: '1px solid #e8e0d8', color: '#78716c' }}
+                >
+                  {SORT_OPTIONS.map(o => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* 목록 */}
+            <WebtoonList webtoons={filtered} onEdit={openEdit} onDelete={deleteWebtoon} />
+          </>
+        )}
+
+        {tab === '통계' && <StatsPage webtoons={webtoons} />}
       </div>
 
       {/* 모달 */}
