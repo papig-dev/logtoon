@@ -1,3 +1,4 @@
+import { useState, useRef, useEffect } from 'react'
 import { getCoverColor } from '../utils/coverColor'
 
 const STATUS_STYLE = {
@@ -7,7 +8,7 @@ const STATUS_STYLE = {
   '관심':   { background: '#ede9fe', color: '#7c3aed' },
 }
 
-export default function WebtoonList({ webtoons, onEdit, onDelete }) {
+export default function WebtoonList({ webtoons, onEdit, onDelete, onIncrementEp }) {
   if (webtoons.length === 0) {
     return (
       <div className="text-center py-20 text-sm" style={{ color: '#a8a29e' }}>
@@ -19,18 +20,30 @@ export default function WebtoonList({ webtoons, onEdit, onDelete }) {
   return (
     <div className="space-y-2.5">
       {webtoons.map(w => (
-        <WebtoonCard key={w.id} webtoon={w} onEdit={onEdit} onDelete={onDelete} />
+        <WebtoonCard key={w.id} webtoon={w} onEdit={onEdit} onDelete={onDelete} onIncrementEp={onIncrementEp} />
       ))}
     </div>
   )
 }
 
-function WebtoonCard({ webtoon, onEdit, onDelete }) {
+function WebtoonCard({ webtoon, onEdit, onDelete, onIncrementEp }) {
   const { title, author, genre, status, serialDays, currentEp, totalEp, rating, memo } = webtoon
   const progress = totalEp ? Math.min(100, Math.round((currentEp / totalEp) * 100)) : null
   const cover = getCoverColor(title)
   const initial = title.charAt(0)
   const statusStyle = STATUS_STYLE[status] || STATUS_STYLE['보류']
+
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useRef(null)
+
+  useEffect(() => {
+    if (!menuOpen) return
+    function handleClick(e) {
+      if (menuRef.current && !menuRef.current.contains(e.target)) setMenuOpen(false)
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [menuOpen])
 
   return (
     <div
@@ -39,7 +52,7 @@ function WebtoonCard({ webtoon, onEdit, onDelete }) {
     >
       {/* 커버 */}
       <div
-        className="shrink-0 w-11 h-15 rounded-xl flex items-center justify-center text-xl font-extrabold select-none"
+        className="shrink-0 flex items-center justify-center text-xl font-extrabold select-none"
         style={{ backgroundColor: cover.bg, color: cover.text, width: 44, height: 60, borderRadius: 12 }}
       >
         {initial}
@@ -79,12 +92,12 @@ function WebtoonCard({ webtoon, onEdit, onDelete }) {
           )}
         </div>
 
-        <div className="flex items-center gap-3">
-          <span className="text-xs" style={{ color: '#78716c' }}>
+        <div className="flex items-center gap-2">
+          <span className="text-xs shrink-0" style={{ color: '#78716c' }}>
             {currentEp}화{totalEp ? ` / ${totalEp}화` : ''}
           </span>
           {progress !== null && (
-            <div className="flex-1 max-w-32 rounded-full h-1.5" style={{ background: '#f5ede8' }}>
+            <div className="flex-1 max-w-28 rounded-full h-1.5" style={{ background: '#f5ede8' }}>
               <div
                 className="h-1.5 rounded-full transition-all"
                 style={{ width: `${progress}%`, background: '#d97706' }}
@@ -92,7 +105,17 @@ function WebtoonCard({ webtoon, onEdit, onDelete }) {
             </div>
           )}
           {progress !== null && (
-            <span className="text-xs" style={{ color: '#a8a29e' }}>{progress}%</span>
+            <span className="text-xs shrink-0" style={{ color: '#a8a29e' }}>{progress}%</span>
+          )}
+          {status === '읽는중' && (
+            <button
+              onClick={() => onIncrementEp(webtoon.id)}
+              className="shrink-0 text-xs px-2 py-0.5 rounded-full font-bold transition-colors"
+              style={{ background: '#fef3c7', color: '#d97706', border: '1px solid #fcd34d' }}
+              title="1화 읽음"
+            >
+              +1
+            </button>
           )}
         </div>
 
@@ -101,27 +124,44 @@ function WebtoonCard({ webtoon, onEdit, onDelete }) {
         )}
       </div>
 
-      <div className="flex gap-1 shrink-0">
+      {/* ... 메뉴 */}
+      <div className="relative shrink-0" ref={menuRef}>
         <button
-          onClick={() => onEdit(webtoon)}
-          className="text-xs px-2.5 py-1 rounded-lg transition-colors"
+          onClick={() => setMenuOpen(v => !v)}
+          className="text-sm w-7 h-7 flex items-center justify-center rounded-lg transition-colors"
           style={{ color: '#a8a29e' }}
           onMouseOver={e => e.currentTarget.style.background = '#f5ede8'}
           onMouseOut={e => e.currentTarget.style.background = 'transparent'}
         >
-          편집
+          ···
         </button>
-        <button
-          onClick={() => {
-            if (confirm(`"${title}" 을(를) 삭제할까요?`)) onDelete(webtoon.id)
-          }}
-          className="text-xs px-2.5 py-1 rounded-lg transition-colors"
-          style={{ color: '#fca5a5' }}
-          onMouseOver={e => e.currentTarget.style.background = '#fef2f2'}
-          onMouseOut={e => e.currentTarget.style.background = 'transparent'}
-        >
-          삭제
-        </button>
+        {menuOpen && (
+          <div
+            className="absolute right-0 top-8 z-10 rounded-xl overflow-hidden"
+            style={{ background: '#fff', border: '1px solid #e8e0d8', boxShadow: '0 4px 16px rgba(0,0,0,0.1)', minWidth: 80 }}
+          >
+            <button
+              onClick={() => { onEdit(webtoon); setMenuOpen(false) }}
+              className="w-full text-left text-xs px-3 py-2 transition-colors"
+              style={{ color: '#3d3530', borderBottom: '1px solid #f5ede8' }}
+              onMouseOver={e => e.currentTarget.style.background = '#faf8f5'}
+              onMouseOut={e => e.currentTarget.style.background = '#fff'}
+            >
+              편집
+            </button>
+            <button
+              onClick={() => {
+                if (confirm(`"${title}" 을(를) 삭제할까요?`)) { onDelete(webtoon.id); setMenuOpen(false) }
+              }}
+              className="w-full text-left text-xs px-3 py-2 transition-colors"
+              style={{ color: '#ef4444' }}
+              onMouseOver={e => e.currentTarget.style.background = '#fef2f2'}
+              onMouseOut={e => e.currentTarget.style.background = '#fff'}
+            >
+              삭제
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )

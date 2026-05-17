@@ -14,7 +14,7 @@ const SORT_OPTIONS = [
 ]
 
 export default function App() {
-  const { webtoons, addWebtoon, updateWebtoon, deleteWebtoon, exportJSON, importJSON } = useWebtoons()
+  const { webtoons, addWebtoon, updateWebtoon, deleteWebtoon, incrementEp, exportJSON, importJSON } = useWebtoons()
 
   const [tab, setTab] = useState('목록')
   const [modalOpen, setModalOpen] = useState(false)
@@ -158,7 +158,7 @@ export default function App() {
             </div>
 
             {/* 목록 */}
-            <WebtoonList webtoons={filtered} onEdit={openEdit} onDelete={deleteWebtoon} />
+            <WebtoonList webtoons={filtered} onEdit={openEdit} onDelete={deleteWebtoon} onIncrementEp={incrementEp} />
           </>
         )}
 

@@ -41,6 +41,16 @@ export function useWebtoons() {
     setWebtoons(prev => prev.filter(w => w.id !== id))
   }
 
+  function incrementEp(id) {
+    setWebtoons(prev =>
+      prev.map(w =>
+        w.id === id
+          ? { ...w, currentEp: (w.currentEp || 0) + 1, updatedAt: new Date().toISOString() }
+          : w
+      )
+    )
+  }
+
   function exportJSON() {
     const blob = new Blob([JSON.stringify(webtoons, null, 2)], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
@@ -66,5 +76,5 @@ export function useWebtoons() {
     reader.readAsText(file)
   }
 
-  return { webtoons, addWebtoon, updateWebtoon, deleteWebtoon, exportJSON, importJSON }
+  return { webtoons, addWebtoon, updateWebtoon, deleteWebtoon, incrementEp, exportJSON, importJSON }
 }
